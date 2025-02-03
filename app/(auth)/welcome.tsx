@@ -6,6 +6,7 @@ import Swiper from "react-native-swiper";
 import image1 from "../../assets/images/7473101_3682361.jpg";
 import image2 from "../../assets/images/7334370_3624925.jpg";
 import image3 from "../../assets/images/10780448_19199058.jpg";
+import CustomButton from "@/components/CustomButton";
 
 const onboardingData = [
   {
@@ -34,6 +35,15 @@ const onboardingData = [
 const Onboarding = () => {
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const isLastSlide = activeIndex === onboardingData.length - 1;
+
+  const handleNextPress = () => {
+    {
+      isLastSlide
+        ? router.replace("/(auth)/sign-up")
+        : swiperRef.current?.scrollBy(1);
+    }
+  };
   return (
     <SafeAreaView className="flex h-full items-center justify-between bg-white">
       <TouchableOpacity
@@ -55,20 +65,31 @@ const Onboarding = () => {
           <View key={item.id} className={" items-center justify-center px-6"}>
             <Image
               source={item.image}
-              className={"w-64 h-64 mb-10"}
+              className={"w-80 h-80 mb-6"}
               resizeMode="contain"
             />
             <Text
-              className={"text-3xl font-bold text-center mb-4 text-gray-800"}
+              className={
+                "text-4xl leading-normal font-bold text-center mb-7 text-gray-800"
+              }
             >
               {item.title}
             </Text>
-            <Text className={"text-base text-center text-gray-600 mb-10"}>
+            <Text
+              className={
+                "text-lg font-medium leading-relaxed text-center text-neutral-700 mb-10"
+              }
+            >
               {item.description}
             </Text>
           </View>
         ))}
       </Swiper>
+      <CustomButton
+        onPress={handleNextPress}
+        title={isLastSlide ? "Get Started" : "Next"}
+        className="w-11/12 mt-10 bg-blue-600"
+      />
     </SafeAreaView>
   );
 };
