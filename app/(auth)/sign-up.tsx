@@ -7,6 +7,8 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -48,15 +50,19 @@ const SignUp = () => {
         password: data.password,
       });
 
+      console.log("email and password", data.emailAddress, data.password);
+
       // Send user an email with verification code
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
       // Set 'pendingVerification' to true to display second form
       // and capture OTP code
       setPendingVerification(true);
-    } catch (err) {
+      router.replace("/(auth)/verify-email");
+    } catch (err: any) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
+      Alert.alert("Error", err.errors[0].longMessage);
       console.log(err);
       console.error(JSON.stringify(err, null, 2));
     }
@@ -90,10 +96,6 @@ const SignUp = () => {
     }
   };
 
-  // const onSubmit = (data: any) => {
-  //   console.log(data);
-  // };
-
   const handleGoogleSignUp = () => {
     console.log("google signup");
   };
@@ -101,14 +103,26 @@ const SignUp = () => {
   if (pendingVerification) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text className="text-xl mb-4">Verify Your Email</Text>
-        <TextInput
-          className="text-lg border w-11/12 py-2 px-2 rounded-xl"
-          placeholder="Verification Code"
-          value={code}
-          onChangeText={setCode}
-          keyboardType="numeric"
-        />
+        <Text className="text-3xl font-bold mb-3 text-gray-800">
+          Check your email ✨
+        </Text>
+        <Text className="text-gray-500 text-lg font-semibold mb-9">
+          We sent a verification code to your email
+        </Text>
+        <KeyboardAvoidingView className="w-10/12">
+          <Text className="text-gray-700 text-lg font-medium mb-2">
+            Enter your verification code
+          </Text>
+          <TextInput
+            className="w-full h-14 px-4 text-xl border-gray-400 border rounded-xl"
+            keyboardType="number-pad"
+            maxLength={6}
+            value={code}
+            onChangeText={setCode}
+            placeholder="Enter code"
+          />
+        </KeyboardAvoidingView>
+
         <TouchableOpacity
           className="border border-gray-500 bg-blue-600 px-8 py-3 rounded-lg mt-4"
           onPress={onVerifyPress}

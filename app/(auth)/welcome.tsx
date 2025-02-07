@@ -89,6 +89,7 @@ const Onboarding = () => {
         onPress={handleNextPress}
         title={isLastSlide ? "Get Started" : "Next"}
         className="w-11/12 mt-10 bg-blue-600"
+        textStyle="text-gray-50"
       />
     </SafeAreaView>
   );

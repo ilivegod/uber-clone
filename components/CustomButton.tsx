@@ -23,7 +23,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`w-full rounded-2xl flex flex-row justify-center p-3 items-center ${className}`}
+      className={`rounded-2xl flex flex-row justify-center p-3 items-center ${className}`}
     >
       {IconLeft && <IconLeft />}
       <Text className={`text-lg font-bold ${textStyle}`}>{title}</Text>
