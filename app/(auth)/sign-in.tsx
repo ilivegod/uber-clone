@@ -7,13 +7,14 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import CustomButton from "@/components/CustomButton";
 import google from "@/assets/icons/google.png";
 import { Link } from "expo-router";
 
 const SignUp = () => {
+  const [loading, setLoading] = useState(false);
   const {
     control,
     handleSubmit,

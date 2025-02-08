@@ -2,13 +2,11 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TextInput,
   Image,
-  TouchableOpacity,
-  SafeAreaView,
   Alert,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -21,6 +19,7 @@ import ReactNativeModal from "react-native-modal";
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
   const router = useRouter();
 
@@ -45,6 +44,7 @@ const SignUp = () => {
 
     // Start sign-up process using email and password provided
     try {
+      setLoading(true);
       await signUp.create({
         emailAddress: data.emailAddress,
         password: data.password,
@@ -58,13 +58,14 @@ const SignUp = () => {
       // Set 'pendingVerification' to true to display second form
       // and capture OTP code
       setPendingVerification(true);
-      router.replace("/(auth)/verify-email");
     } catch (err: any) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       Alert.alert("Error", err.errors[0].longMessage);
       console.log(err);
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +74,7 @@ const SignUp = () => {
     if (!isLoaded) return;
 
     try {
+      setLoading(true);
       // Use the code the user provided to attempt verification
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code,
@@ -82,7 +84,7 @@ const SignUp = () => {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace("/");
+        router.replace("/(root)/(tabs)/home");
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.
@@ -93,6 +95,8 @@ const SignUp = () => {
       // for more info on error handling
       console.log(err);
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,13 +126,12 @@ const SignUp = () => {
             placeholder="Enter code"
           />
         </KeyboardAvoidingView>
-
-        <TouchableOpacity
-          className="border border-gray-500 bg-blue-600 px-8 py-3 rounded-lg mt-4"
+        <CustomButton
+          title={loading ? <ActivityIndicator color="white" /> : "Verify Email"}
           onPress={onVerifyPress}
-        >
-          <Text className="text-gray-50">Verify</Text>
-        </TouchableOpacity>
+          className="w-11/12 mt-8 bg-blue-600"
+          textStyle="text-gray-50"
+        />
       </View>
     );
   }
@@ -214,7 +217,7 @@ const SignUp = () => {
         <Text className={"text-red-500 mb-3"}>{errors.password.message}</Text>
       )}
       <CustomButton
-        title="Sign Up"
+        title={loading ? <ActivityIndicator color="white" /> : "Sign Up"}
         onPress={handleSubmit(onSignUpPress)}
         className="w-full mt-10 bg-blue-500"
         textStyle="text-gray-50"

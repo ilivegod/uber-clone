@@ -4,7 +4,7 @@ import React from "react";
 
 interface CustomButtonProps extends TouchableOpacityProps {
   onPress: () => void;
-  title: string;
+  title: any;
   IconLeft?: any;
   IconRight?: any;
   className?: string;
